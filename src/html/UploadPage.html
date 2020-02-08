@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>이미지 업로드 & 다운로드 페이지</title>
+</head>
+<body>
+
+<div>
+    <h2>이미지 업로드</h2>
+    <img id="image_upload" style="display:block;width:400px;height:200px;"/>
+    <input type="file" name={"img"} accept="image/jpg, image/jpeg" onchange="fileUploadChange(this.files)"/>
+
+</div>
+
+<div>
+    <h2>이미지 다운로드</h2>
+    <img id="image_download" style="display:block;width:400px;height:300px;object-fit:none;"/>
+    <input type="text" id="uri" style="display:block;width:400px;height:30px">
+    <button style="display:block;" onclick="onClickHandler()">이미지 다운로드</button>
+</div>
+
+
+
+</body>
+
+
+<script>
+
+    function onClickHandler() {
+        document.getElementById("image_download").src = "http://localhost:5000" + document.getElementById("uri").value;
+    }
+
+    function fileUploadChange(files) {
+        const file = files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const headers = {
+            "Content-Type": "multipart/form-data",
+        };
+
+
+        axios.create({
+            baseURL: "http://localhost:3000",
+        }).post('/image', formData, {
+            headers: headers,
+        }).then(function (response) {
+            document.getElementById("image_upload").src = "http://localhost:3000/images/"+response.data.message;
+            document.getElementById("uri").value = "/images/"+response.data.message;
+        }).catch(function (error) {
+            alert(error.response.data.message);
+        });
+    }
+
+</script>
+
+</html>
